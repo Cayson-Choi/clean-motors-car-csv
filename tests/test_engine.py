@@ -1,4 +1,5 @@
 # tests/test_engine.py
+import csv as _csv
 from datetime import date
 from src import engine
 
@@ -60,3 +61,16 @@ def test_apply_resolution_delete_all():
     data = [_row('A','x'), _row('A','y'), _row('B','z')]
     final = engine.apply_resolution(data, {'A': {'delete_all': True}})
     assert [r[2] for r in final] == ['B']
+
+
+def test_write_csv(tmp_path):
+    header = [['유효','VIP','차량번호'] + ['']*13,
+              ['(O:추가 X:삭제)','(생략)','(필수)'] + ['']*13]
+    data = [_row('A','오토마트'), _row('B','그린')]
+    out = tmp_path/'out.csv'
+    engine.write_csv(str(out), header, data, 'utf-8-sig')
+    with open(out, encoding='utf-8-sig', newline='') as f:
+        rows = list(_csv.reader(f))
+    assert rows[0][2] == '차량번호'
+    assert rows[1][0] == '(O:추가 X:삭제)'
+    assert [r[2] for r in rows[2:]] == ['A','B']
