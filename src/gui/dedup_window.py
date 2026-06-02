@@ -1,7 +1,12 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QScrollArea,
     QLabel, QGroupBox, QRadioButton, QCheckBox, QLineEdit, QPushButton,
-    QButtonGroup, QFileDialog, QMessageBox)
+    QButtonGroup, QFrame, QFileDialog, QMessageBox)
 from src import engine
+
+# 선택된 행 / 미선택 행 / 모두삭제 상태의 행 스타일
+STYLE_SELECTED = 'QFrame#dupRow { background:#CDE6FF; border:1px solid #4A90D9; border-radius:5px; }'
+STYLE_UNSELECTED = 'QFrame#dupRow { background:transparent; border:1px solid transparent; }'
+STYLE_DELETED = 'QFrame#dupRow { background:#F0F0F0; border:1px solid #D0D0D0; border-radius:5px; }'
 
 NAME_COL = 4
 
@@ -28,16 +33,34 @@ class DedupWindow(QWidget):
     def _group(self, plate, idxs):
         box = QGroupBox(f'차량번호 {plate} ({len(idxs)}건)')
         v = QVBoxLayout(box)
-        bg = QButtonGroup(box); radios=[]; edits=[]
-        pure = engine.is_pure_duplicate(self.data, idxs)
+        bg = QButtonGroup(box); edits = []; frames = []
+        chk = QCheckBox('둘 다(모두) 삭제')
         for n, i in enumerate(idxs):
-            row = QHBoxLayout()
+            frame = QFrame(); frame.setObjectName('dupRow')
+            row = QHBoxLayout(frame); row.setContentsMargins(6, 3, 6, 3)
             rb = QRadioButton('남김'); bg.addButton(rb, i)
-            if n == 0: rb.setChecked(True)
             name = QLineEdit(str(self.data[i][NAME_COL]))
-            row.addWidget(rb); row.addWidget(QLabel('입주사명:')); row.addWidget(name)
-            v.addLayout(row); radios.append(rb); edits.append((i, name))
-        chk = QCheckBox('둘 다(모두) 삭제'); v.addWidget(chk)
+            row.addWidget(rb); row.addWidget(QLabel('입주사명:')); row.addWidget(name, 1)
+            v.addWidget(frame)
+            edits.append((i, name)); frames.append((rb, frame))
+            if n == 0: rb.setChecked(True)
+        v.addWidget(chk)
+
+        def refresh():
+            delete_all = chk.isChecked()
+            for rb, frame in frames:
+                if delete_all:
+                    frame.setStyleSheet(STYLE_DELETED); rb.setText('남김')
+                elif rb.isChecked():
+                    frame.setStyleSheet(STYLE_SELECTED); rb.setText('★ 남김 (선택됨)')
+                else:
+                    frame.setStyleSheet(STYLE_UNSELECTED); rb.setText('남김')
+
+        for rb, _f in frames:
+            rb.toggled.connect(refresh)
+        chk.toggled.connect(refresh)
+        refresh()
+
         self.widgets[plate] = {'bg': bg, 'edits': edits, 'delete_all': chk}
         return box
 
