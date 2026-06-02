@@ -33,7 +33,8 @@ def process(data, additions, sold, outcha, base_date):
     summary = {
         'added': len(new_rows),
         'sold_removed': len(existing & set(sold)),
-        'outcha_removed': len(existing & set(outcha)),
+        # 매도와 출차에 동시에 있는 차량은 매도로 분류(매도를 먼저 제거하는 수동 절차와 일치)
+        'outcha_removed': len((existing & set(outcha)) - set(sold)),
     }
     return result, summary
 

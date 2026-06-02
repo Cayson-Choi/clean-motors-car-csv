@@ -31,6 +31,15 @@ def test_process_add_and_remove():
     assert new[6]=='2999-12-31 00:00:00'
 
 
+def test_process_overlap_sold_and_outcha_count():
+    # 같은 차량이 매도·출차 양쪽에 있으면 매도로 분류, 출차 카운트에서 제외
+    data = [_row('A','x'), _row('B','y'), _row('C','z')]
+    result, summary = engine.process(data, {}, {'A', 'B'}, {'B', 'C'}, date(2026, 6, 2))
+    assert summary['sold_removed'] == 2    # A, B
+    assert summary['outcha_removed'] == 1  # C만 (B는 매도와 겹쳐 제외)
+    assert len(result) == 0                # A,B,C 모두 제거
+
+
 def test_detect_duplicates():
     data = [_row('A','오토마트'), _row('B','그린'), _row('A','직원용'), _row('C','x'), _row('B','그린')]
     dups = engine.detect_duplicates(data)
