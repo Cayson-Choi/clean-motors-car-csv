@@ -65,3 +65,31 @@ def extract_presented_additions(ledger_rows):
 
 def ledger_all_plates(ledger_rows):
     return set(r['plate'] for r in ledger_rows)
+
+def parse_outcha(path):
+    wb = load_workbook(path, data_only=True, read_only=True)
+    ws = wb.worksheets[0]
+    rows = list(ws.iter_rows(values_only=True))
+    wb.close()
+    hr = cc = None
+    for ri in range(min(5, len(rows))):
+        for ci, v in enumerate(rows[ri]):
+            if v is not None and '차량번호' in str(v):
+                hr, cc = ri, ci
+                break
+        if cc is not None:
+            break
+    plates = set()
+    if hr is None:
+        return plates
+    for r in rows[hr + 1:]:
+        v = r[cc] if cc < len(r) else None
+        if v is not None and _norm(v):
+            plates.add(_norm(v))
+    return plates
+
+def parse_outcha_many(paths):
+    out = set()
+    for p in paths:
+        out |= parse_outcha(p)
+    return out

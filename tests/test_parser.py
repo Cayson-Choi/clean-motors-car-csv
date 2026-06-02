@@ -22,3 +22,13 @@ def test_parse_ledger_and_additions(jesi_xlsx):
 def test_ledger_all_plates(jesi_xlsx):
     rows = parser.parse_ledger(jesi_xlsx)
     assert parser.ledger_all_plates(rows) == {'AA1','BB2','CC3','DD4'}
+
+def test_parse_outcha(outcha_a, outcha_b):
+    a = parser.parse_outcha(outcha_a)
+    assert a == {'22나2222','99바9999'}
+    b = parser.parse_outcha(outcha_b)
+    assert b == {'77사7777'}
+
+def test_parse_outcha_many(outcha_a, outcha_b):
+    s = parser.parse_outcha_many([outcha_a, outcha_b])
+    assert s == {'22나2222','99바9999','77사7777'}

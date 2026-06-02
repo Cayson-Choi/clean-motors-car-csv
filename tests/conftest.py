@@ -43,3 +43,21 @@ def jesi_xlsx(tmp_path):
         ['4','승용','DD4','소유4','20260504','20260512','상사','프로모터스','매도'],       # 매도 -> 제외
     ]
     return _ledger(tmp_path, 'jesi.xlsx', rows)
+
+@pytest.fixture
+def outcha_a(tmp_path):
+    # 차량번호가 4번째 열, 2행은 빈 행
+    wb = Workbook(); ws = wb.active
+    ws.append(['순번','입고일','출고일','차량번호','차량명','진행기관'])
+    ws.append([None,None,None,None,None,None])
+    ws.append(['1','2026-01-01','2026-01-05','22나2222','차A','기관'])
+    ws.append(['2','2026-01-02','2026-01-06','99바9999','차B','기관'])
+    p = tmp_path/'outcha_a.xlsx'; wb.save(p); return str(p)
+
+@pytest.fixture
+def outcha_b(tmp_path):
+    # 차량번호가 2번째 열
+    wb = Workbook(); ws = wb.active
+    ws.append(['상태','차량번호','차량명','진행기관','진행','입고일','출고일'])
+    ws.append(['출고완료','77사7777','차C','기관','낙찰','2026-02-01','2026-02-05'])
+    p = tmp_path/'outcha_b.xlsx'; wb.save(p); return str(p)
