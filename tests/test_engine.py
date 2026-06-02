@@ -38,3 +38,25 @@ def test_detect_duplicates():
     assert dups['A'] == [0,2]
     assert engine.is_pure_duplicate(data, dups['B']) is True   # 입주사명 동일
     assert engine.is_pure_duplicate(data, dups['A']) is False  # 입주사명 다름
+
+
+def test_apply_resolution():
+    data = [_row('A','오토마트'), _row('B','그린'), _row('A','직원용'),
+            _row('C','x'), _row('B','그린')]
+    resolutions = {
+        'A': {'keep_index': 0},                 # 오토마트 행만
+        'B': {'keep_index': 4, 'new_name': '덕일 직원용'},  # 입주사명 교체
+    }
+    final = engine.apply_resolution(data, resolutions)
+    plates = [r[2] for r in final]
+    assert plates.count('A') == 1
+    assert plates.count('B') == 1
+    a = [r for r in final if r[2]=='A'][0]
+    assert a[4] == '오토마트'
+    b = [r for r in final if r[2]=='B'][0]
+    assert b[4] == '덕일 직원용'
+
+def test_apply_resolution_delete_all():
+    data = [_row('A','x'), _row('A','y'), _row('B','z')]
+    final = engine.apply_resolution(data, {'A': {'delete_all': True}})
+    assert [r[2] for r in final] == ['B']
