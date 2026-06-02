@@ -1,4 +1,6 @@
 # tests/test_parser.py
+import os
+import pytest
 from src import parser
 
 def test_parse_parking_csv(park_csv):
@@ -32,3 +34,18 @@ def test_parse_outcha(outcha_a, outcha_b):
 def test_parse_outcha_many(outcha_a, outcha_b):
     s = parser.parse_outcha_many([outcha_a, outcha_b])
     assert s == {'22나2222','99바9999','77사7777'}
+
+def test_detect_encoding_utf8_bom(tmp_path):
+    p = tmp_path / 'bom.csv'
+    p.write_bytes(b'\xef\xbb\xbf' + '안녕하세요'.encode('utf-8'))
+    assert parser.detect_encoding(str(p)) == 'utf-8-sig'
+
+def test_detect_encoding_utf8_no_bom(tmp_path):
+    p = tmp_path / 'plain.csv'
+    p.write_bytes('안녕하세요'.encode('utf-8'))
+    assert parser.detect_encoding(str(p)) == 'utf-8'
+
+def test_detect_encoding_cp949(tmp_path):
+    p = tmp_path / 'cp949.csv'
+    p.write_bytes('안녕하세요'.encode('cp949'))
+    assert parser.detect_encoding(str(p)) == 'cp949'

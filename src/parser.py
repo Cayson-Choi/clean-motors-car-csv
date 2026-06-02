@@ -2,12 +2,17 @@ import csv
 from openpyxl import load_workbook
 
 def detect_encoding(path):
-    for enc in ('utf-8-sig', 'utf-8', 'cp949'):
+    with open(path, 'rb') as f:
+        head = f.read(4)
+    if head.startswith(b'\xef\xbb\xbf'):
+        return 'utf-8-sig'
+    with open(path, 'rb') as f:
+        raw = f.read()
+    for enc in ('utf-8', 'cp949'):
         try:
-            with open(path, encoding=enc) as f:
-                f.read()
+            raw.decode(enc)
             return enc
-        except (UnicodeDecodeError, UnicodeError):
+        except UnicodeDecodeError:
             continue
     return 'utf-8'
 
