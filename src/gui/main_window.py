@@ -1,6 +1,6 @@
 from datetime import date
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QLabel, QListWidget, QDateEdit, QFileDialog, QMessageBox)
+    QLabel, QListWidget, QDateEdit, QFileDialog, QMessageBox, QAbstractItemView)
 from PySide6.QtCore import QDate, Signal
 from src import parser, engine
 
@@ -24,6 +24,7 @@ class MainWindow(QWidget):
             row.addWidget(b); row.addWidget(lbl); lay.addLayout(row)
         lay.addWidget(QLabel('오토넷출차리스트 (여러 개)'))
         self.list_outcha = QListWidget(); lay.addWidget(self.list_outcha)
+        self.list_outcha.setSelectionMode(QAbstractItemView.ExtendedSelection)
         orow = QHBoxLayout()
         b_add = QPushButton('+ 추가'); b_add.clicked.connect(self.add_outcha)
         b_del = QPushButton('선택 제거'); b_del.clicked.connect(self.del_outcha)
@@ -49,8 +50,10 @@ class MainWindow(QWidget):
             if f not in self.outcha:
                 self.outcha.append(f); self.list_outcha.addItem(f)
     def del_outcha(self):
-        for it in self.list_outcha.selectedItems():
-            self.outcha.remove(it.text()); self.list_outcha.takeItem(self.list_outcha.row(it))
+        rows = sorted((self.list_outcha.row(it) for it in self.list_outcha.selectedItems()), reverse=True)
+        for r in rows:
+            it = self.list_outcha.takeItem(r)
+            self.outcha.remove(it.text())
 
     def run(self):
         if not (self.park and self.maedo and self.jesi):
