@@ -11,8 +11,8 @@ def make_row(plate, dealer, base_date, ncols=16):
     row[1] = 'X'
     row[2] = plate
     row[4] = dealer
-    row[5] = base_date.strftime('%Y-%m-%d 00:00:00')
-    row[6] = '2999-12-31 00:00:00'
+    row[5] = base_date.strftime('%Y-%m-%d')
+    row[6] = '2999-12-31'
     return row
 
 

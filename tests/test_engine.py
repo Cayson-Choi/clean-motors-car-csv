@@ -27,8 +27,8 @@ def test_process_add_and_remove():
     # 신규행 값 확인
     new = [r for r in result if r[2]=='AA1'][0]
     assert new[0]=='O' and new[1]=='X' and new[4]=='프로모터스'
-    assert new[5]=='2026-06-02 00:00:00'
-    assert new[6]=='2999-12-31 00:00:00'
+    assert new[5]=='2026-06-02'
+    assert new[6]=='2999-12-31'
 
 
 def test_process_overlap_sold_and_outcha_count():
