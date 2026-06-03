@@ -2,10 +2,12 @@ import sys
 from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox
 from src.gui.main_window import MainWindow
 from src.gui.dedup_window import DedupWindow
+from src.gui.style import APP_STYLE
 from src import engine
 
 def main():
     app = QApplication(sys.argv)
+    app.setStyleSheet(APP_STYLE)
     win = MainWindow()
     holder = {}
 
