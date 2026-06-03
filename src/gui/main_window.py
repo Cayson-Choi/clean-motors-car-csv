@@ -41,10 +41,7 @@ def _make_footer() -> QFrame:
     bar.setFixedHeight(32)
     lay = QHBoxLayout(bar)
     lay.setContentsMargins(12, 0, 12, 0)
-    lbl = QLabel(
-        '© 2026 깨끗한 모터스 (Clean Motors).  All Rights Reserved.'
-        '   ·   본 프로그램의 모든 권리는 깨끗한 모터스가 보유합니다.'
-    )
+    lbl = QLabel('© 2026 깨끗한 모터스.  All Rights Reserved.')
     lbl.setObjectName('footer_text')
     lbl.setAlignment(Qt.AlignCenter)
     lay.addWidget(lbl)
@@ -156,6 +153,7 @@ class MainWindow(QWidget):
         self.date = QDateEdit(QDate.currentDate())
         self.date.setDisplayFormat('yyyy-MM-dd')
         self.date.setMinimumHeight(36)
+        self.date.setMinimumWidth(160)
         self.date.setCalendarPopup(True)
         date_row.addWidget(date_lbl)
         date_row.addWidget(self.date)

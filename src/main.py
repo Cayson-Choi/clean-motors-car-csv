@@ -3,11 +3,13 @@ from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox
 from src.gui.main_window import MainWindow
 from src.gui.dedup_window import DedupWindow
 from src.gui.style import APP_STYLE
+from src.gui.app_icon import app_icon
 from src import engine
 
 def main():
     app = QApplication(sys.argv)
     app.setStyleSheet(APP_STYLE)
+    app.setWindowIcon(app_icon())
     win = MainWindow()
     holder = {}
 
